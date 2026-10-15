@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi página interactiva</title>
+<style>
+:root { --fondo: url('fondo.jpg'); }
+* {box-sizing:border-box} body {margin:0;min-height:100vh;overflow:hidden;font-family:Arial,sans-serif;color:white;background:linear-gradient(#0006,#0008),var(--fondo) center/cover fixed,linear-gradient(135deg,#17213f,#693b7c);}
+main {min-height:100vh;display:grid;place-content:center;text-align:center;padding:24px} h1{text-shadow:0 3px 12px #0009}button{border:0;border-radius:25px;padding:16px 30px;background:#6d173c;color:white;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 5px 20px #0006}button:hover{background:#ff2584;transform:scale(1.04)}
+#apariciones{position:fixed;inset:0;pointer-events:none}.mensaje{position:absolute;max-width:min(280px,75vw);padding:12px 18px;border-radius:16px;background:#171729d9;box-shadow:0 8px 30px #0006;text-align:center;animation:entrada .4s ease-out, salida .6s ease-in forwards;animation-delay:0s,var(--salida);}.mensaje img{display:block;max-width:210px;max-height:170px;width:auto;margin:0 auto 10px;border-radius:10px}.mensaje p{margin:0;font-weight:bold}.pareja{left:50%!important;top:50%!important;transform:translate(-50%,-50%);width:min(340px,85vw);max-width:85vw;background:#30172fe8;animation:aparecerPareja .4s ease-out,salirPareja .6s ease-in forwards;animation-delay:0s,var(--salida)}.pareja img{max-width:100%;width:100%;max-height:55vh;object-fit:contain}.pareja p{font-size:21px}@keyframes aparecerPareja{from{opacity:0;scale:.85}to{opacity:1;scale:1}}@keyframes salirPareja{to{opacity:0;scale:.9}}.aleatorio{background:#ffffff25;backdrop-filter:blur(6px);font-size:clamp(14px,2vw,20px)}@keyframes entrada{from{opacity:0;transform:translateY(18px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes salida{to{opacity:0;transform:translateY(-12px) scale(.9)}}
+</style>
+</head>
+<body><main><h1>Este es un regalo que hice con todo mi corazon para tii</h1><button id="boton">💖 Contador: <span id="contador">0</span></button></main><div id="apariciones" aria-live="polite"></div>
+<script>
+
+const configuracion = {
+  tiempoVisible: 4000, 
+  intervaloAleatorio: 3000, 
+  fotoPareja: 'fotonosotros.jpg', 
+  textosAleatorios: ['Te amooooo','Eres lo mejor preciosa','Eres especial para mi amor','Siempre estas en mi corazonsote']
+};
+const contenedor = document.getElementById('apariciones');
+let contador = Number(localStorage.getItem("contadorAmor")) || 0;
+document.getElementById("contador").textContent = contador;
+function mostrar(texto, imagen = '', clase = '') {
+  const elemento = document.createElement('div');
+  elemento.className = 'mensaje ' + clase;
+  elemento.style.setProperty('--salida', Math.max(0, configuracion.tiempoVisible - 600) + 'ms');
+  if(imagen){const img=document.createElement('img');img.src=imagen;img.alt='Imagen del mensaje';img.onerror=()=>img.remove();elemento.appendChild(img)}
+  const p=document.createElement('p');p.textContent=texto;elemento.appendChild(p);
+  contenedor.appendChild(elemento);
+  const ancho = Math.min(elemento.offsetWidth, window.innerWidth);
+  const alto = Math.min(elemento.offsetHeight, window.innerHeight);
+  elemento.style.left = Math.random()*Math.max(0,window.innerWidth-ancho)+'px';
+  elemento.style.top = Math.random()*Math.max(0,window.innerHeight-alto)+'px';
+  setTimeout(()=>elemento.remove(),configuracion.tiempoVisible);
+}
+document.getElementById('boton').addEventListener('click',()=>{
+  contador++;
+  localStorage.setItem("contadorAmor", contador);
+  document.getElementById("contador").textContent = contador;
+  mostrar("Nos hemos amado hoy " + contador + " ❤️", configuracion.fotoPareja, 'pareja');
+});
+setInterval(()=>{
+  const textos=configuracion.textosAleatorios;
+  mostrar(textos[Math.floor(Math.random()*textos.length)],'','aleatorio');
+},configuracion.intervaloAleatorio);
+</script></body></html>
